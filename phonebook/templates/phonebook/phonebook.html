@@ -1,17 +1,36 @@
-{% extends "phonebook/wrapper.html"  %}
+{% extends "phonebook/wrapper.html" %}
+
+{% block content %}
 <table class="table">
   <thead class="thead-dark">
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">Имя</th>
-      <th scope="col">Фамилия</th>
-      <th scope="col">Username</th>
+      <th scope="col">ФИО</th>
+      <th scope="col">Должность</th>
+      <th scope="col">E-Mail</th>
+      <th scope="col">Городской телефон</th>
+      <th scope="col">IP телефон</th>
     </tr>
   </thead>
 <tbody>
-<tr>
-{% block content %}
-    <th scope="row"></th>
-    <td></td>
-{% endblock %}
-</tr>
+    {% for person in person_list %}
+        <tr>
+            <th scope="row"> {{ person }}</th>
+            <td>{{ person.position }}</td>
+            <td>{{ person.email }}</td>
+
+            {% if person.city_phone %}
+                <td>{{ person.city_phone }}</td>
+            {% else %}
+                <td>{{ "-" }}</td>
+            {% endif %}
+
+            {% if person.ip_phone %}
+                <td>{{ person.ip_phone}}</td>
+            {% else %}
+                <td>{{ "-" }}</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+</tbody>
+</table>
+    {% endblock %}

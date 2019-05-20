@@ -1,8 +1,10 @@
 {% extends "phonebook/wrapper.html" %}
 
 {% block content %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/table-style.css' %}" type="text/css"/>
 <table class="table table-sm">
-  <thead class="thead-dark text-center">
+  <thead>
     <tr>
       <th scope="col">ФИО</th>
       <th scope="col">Должность</th>
@@ -13,10 +15,10 @@
   </thead>
 <tbody>
 
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/table-style.css' %}" type="text/css"/>
 {% for department in departments %}
-
+    <tr class="alert-dark">
+        <th colspan="6"> {{ department }}</th>
+    </tr>
     {% for person in person_list %}
         {% if person.department == department %}
         <tr>

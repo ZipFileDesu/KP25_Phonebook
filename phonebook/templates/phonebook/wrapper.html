@@ -1,12 +1,44 @@
 <!DOCTYPE html>
+{% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+    <script type="text/javascript" src="{% static 'js/jQuery_3.4.1.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Тестовая страница</title>
-    {% load staticfiles %}
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+    <link rel="shortcut icon" href="{% static 'site_icon/site_icon.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'site_icon/site_icon.png' %}" type="image/png">
 </head>
 <body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <div class="collapse navbar-collapse">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown">
+            <a class="nav-link" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{% static 'open-iconic-master/png/align-center-4x.png' %}" style="width: 24px"></a>
+        <div class="dropdown-menu" aria-labelledby="dropdown04">
+          <a class="dropdown-item" href="/admin">Панель администратора</a>
+          <a class="dropdown-item" href="#">Экспорт в CSV</a>
+          <a class="dropdown-item" href="#">Экспорт в CSV все регионы</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <div class="navbar-header navbar-brand">Телефонный справочник ФГБУ</div>
+      </li>
+        <li class="nav-item">
+        <a class="nav-link" href="#">ФГБУ ~ Приморский край</a>
+      </li>
+    </ul>
+      <div class="navbar-form navbar-right">
+    <form class="form-inline my-2 my-md-0">
+      <input class="form-control" type="text" placeholder="Найти">
+        <input class="btn btn-primary" type="button" value="Найти">
+    </form>
+  </div>
+      </div>
+</nav>
+
 {% block content %}
 
 {% endblock %}

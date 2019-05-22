@@ -1,7 +1,18 @@
 {% extends "phonebook/wrapper.html" %}
 
 {% block content %}
-<table class="table table-sm table-bordered">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+    {% for department in departments %}
+     <a href="#department{{ forloop.counter }}">{{ department }}</a>
+    {% endfor %}
+    <li class="divider"></li>
+    </div>
+
+<!-- Page content -->
+<div class="content">
+<!-- Table -->
+<table class="table table-sm table-bordered" data-spy="scroll" data-target="#sidebar">
   <thead>
     <tr>
       <th scope="col">ФИО</th>
@@ -15,7 +26,7 @@
 
 {% for department in departments %}
     <tr class="alert-dark">
-        <th colspan="6"> {{ department }}</th>
+        <th colspan="6" id="department{{ forloop.counter }}"> {{ department }}</th>
     </tr>
     {% for person in person_list %}
         {% if person.department == department %}
@@ -51,4 +62,5 @@
 {% endfor %}
 </tbody>
 </table>
+</div>
 {% endblock %}

@@ -16,6 +16,8 @@ class IndexView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['departments'] = Department.objects.all().order_by('id')
-        # Add any other variables to the context here
-        ...
         return context
+
+class SearchView(generic.DetailView):
+    template_name = 'phonebook/search.html'
+    model = Person

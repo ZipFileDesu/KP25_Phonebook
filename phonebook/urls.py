@@ -6,6 +6,6 @@ from . import views
 app_name = 'phonebook'
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
-    path('search=<str:search>', views.Search),
+    path('search/<str:search>', views.Search, name='search'),
     #url(r'^search/$', views.Search),
 ]

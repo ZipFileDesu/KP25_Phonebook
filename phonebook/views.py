@@ -49,4 +49,4 @@ def Search(request, search):
                     {'person_list': Person.objects.annotate(
                         search=SearchVector('full_name', 'ip_phone', 'position__position_name')) \
                         .filter(search__icontains=request.GET['search']),
-                     'form': search})
+                     'form': form})

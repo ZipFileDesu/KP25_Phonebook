@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
-from django.http import HttpResponse, request
+from django.http import HttpResponse, request, HttpResponseRedirect
 
 from phonebook.forms import SearchForm
 from .models import Person, Department
@@ -32,7 +32,9 @@ class IndexView(generic.ListView):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['departments'] = Department.objects.all().order_by('id')
         context['form'] = SearchForm(initial={'search': "",})
+        context['txt'] = " "
         return context
+
 
 ''' Данный класс используется для URL преобразования (например: kadastr/phonebook/person_name=danil)'''
 '''def Search(request):
@@ -41,12 +43,14 @@ class IndexView(generic.ListView):
                   {'person_list': Person.objects.annotate(search=SearchVector('full_name','ip_phone', 'position__position_name'))\
             .filter(search__icontains=request.GET['q'])})'''
 
+''' Нужно учитывать тот случай, что строка может быть пустой '''
 def Search(request, search):
     if request.method == 'GET':
         form = SearchForm(request.GET)
         if form.is_valid:
-            return render(request, 'phonebook/search.html',
+            if request.GET['search'] != "":
+                return render(request, 'phonebook/search.html',
                     {'person_list': Person.objects.annotate(
                         search=SearchVector('full_name', 'ip_phone', 'position__position_name')) \
                         .filter(search__icontains=request.GET['search']),
-                     'form': form})
+                     'form': form, 'txt': request.GET['search']})

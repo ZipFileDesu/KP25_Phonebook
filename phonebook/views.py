@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
-from django.http import HttpResponse
+from django.http import HttpResponse, request
+
+from phonebook.forms import SearchForm
 from .models import Person, Department
 from django.contrib.postgres.search import SearchVector
 
@@ -29,16 +31,22 @@ class IndexView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['departments'] = Department.objects.all().order_by('id')
+        context['form'] = SearchForm(initial={'search': "",})
         return context
 
-''' !!! Переделать в ListView, поскольку здесь у нас в данном случае происходит поиск, а не берётся конкретный первичный ключ из бд '''
-''' Данный класс DetailView используется для URL преобразования (например: kadastr/phonebook/person_name=danil)'''
-class SearchView(generic.DetailView):
-    template_name = 'phonebook/search.html'
-    model = Person
-    context_object_name = ''
+''' Данный класс используется для URL преобразования (например: kadastr/phonebook/person_name=danil)'''
+'''def Search(request):
+    if request.method == 'GET':
+        return render(request, 'phonebook/search.html',
+                  {'person_list': Person.objects.annotate(search=SearchVector('full_name','ip_phone', 'position__position_name'))\
+            .filter(search__icontains=request.GET['q'])})'''
 
-    def get_queryset(self):
-        sqs = Person.objects.annotate(search=SearchVector('full_name','ip_phone', 'position__position_name'))\
-            .filter(search__icontains=self.kwargs['search'])
-        return sqs
+def Search(request, search):
+    if request.method == 'GET':
+        form = SearchForm(request.GET)
+        if form.is_valid:
+            return render(request, 'phonebook/search.html',
+                    {'person_list': Person.objects.annotate(
+                        search=SearchVector('full_name', 'ip_phone', 'position__position_name')) \
+                        .filter(search__icontains=request.GET['search']),
+                     'form': search})

@@ -34,9 +34,12 @@
       </li>
     </ul>
       <div class="navbar-form navbar-right">
-    <form class="form-inline my-2 my-sm-0">
-      <input class="form-control" type="text" placeholder="Найти">
-        <input class="btn btn-primary" type="button" value="Найти">
+          <!-- Form -->
+    <form class="form-inline my-2 my-sm-0" method="get">
+        <div class="form-control" placeholder="Найти">
+      {{ form }}
+        </div>
+        <input class="btn btn-primary" type="submit" value="Найти">
     </form>
   </div>
       </div>

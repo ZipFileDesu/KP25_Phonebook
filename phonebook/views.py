@@ -1,10 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.http import HttpResponse, request, HttpResponseRedirect
-
 from phonebook.forms import SearchForm
 from .models import Person, Department
 from django.contrib.postgres.search import SearchVector
+import numpy as np
 
 '''def index(request):
     return HttpResponse("<p>Test page 1 2 3, тестовая страница 1 2 3</p>")'''
@@ -32,7 +32,6 @@ class IndexView(generic.ListView):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['departments'] = Department.objects.all().order_by('id')
         context['form'] = SearchForm(initial={'search': "",})
-        context['txt'] = " "
         return context
 
 
@@ -44,13 +43,18 @@ class IndexView(generic.ListView):
             .filter(search__icontains=request.GET['q'])})'''
 
 ''' Нужно учитывать тот случай, что строка может быть пустой '''
-def Search(request, search):
+def Search(request):
     if request.method == 'GET':
         form = SearchForm(request.GET)
-        if form.is_valid:
-            if request.GET['search'] != "":
+        if form.is_valid():
+            if form.cleaned_data['q']:
                 return render(request, 'phonebook/search.html',
                     {'person_list': Person.objects.annotate(
                         search=SearchVector('full_name', 'ip_phone', 'position__position_name')) \
-                        .filter(search__icontains=request.GET['search']),
-                     'form': form, 'txt': request.GET['search']})
+                        .filter(search__icontains=request.GET['q']),
+                     'form': form})
+            else:
+                return render(request, 'phonebook/phonebook.html',
+                              {'departments': Department.objects.all().order_by('id'),
+                               'person_list': Person.objects.all(),
+                               'form': form})

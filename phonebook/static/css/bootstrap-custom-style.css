@@ -18,7 +18,7 @@ body{
     text-align: center;
 }
 
-/* The side navigation menu */
+/* Навигационное меню сайдбара */
 .sidebar {
     padding: 10px 0;
     width: 300px;
@@ -27,6 +27,7 @@ body{
     overflow-y: scroll;
 }
 
+/* Разделитель сайдбара (маленькая полоска снизу) */
 .sidebar .divider {
     background-color: #e5e5e5;
     height: 1px;
@@ -34,7 +35,7 @@ body{
     overflow: hidden;
 }
 
-/* Sidebar links */
+/* Стиль сайдбара */
 .sidebar a {
   display: block;
   color: black;
@@ -42,19 +43,26 @@ body{
   text-decoration: none;
 }
 
-/* Active/current link */
+/* Вкладка при нажатии мыши */
 /*.sidebar a.active {
   background-color: #4CAF50;
   color: white;
 }*/
 
-/* Links on mouse-over */
+/* Цвет вкладки при выборе мышью */
 .sidebar a:hover:not(.active) {
   background-color: #555;
   color: white;
 }
 
-/* Page content. The value of the margin-left property should match the value of the sidebar's width property */
+/*
+.sidebar a:focus {
+    background-color: #555;
+    color: white;
+}
+*/
+
+/* Контент (в данном случае таблица), расположенный справа */
 div.content {
   margin-left: 300px;
   height: 100%;

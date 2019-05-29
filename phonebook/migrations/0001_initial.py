@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=200)),
                 ('city_phone', models.CharField(max_length=200)),
                 ('ip_phone', models.CharField(max_length=200)),
-                ('branch_office', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.PROTECT, to='phonebook.Branch_Office')),
+                ('branch_office', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.PROTECT, to='phonebook.models.BranchOffice')),
                 ('department', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.PROTECT, to='phonebook.Department')),
                 ('position', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.PROTECT, to='phonebook.Position')),
             ],

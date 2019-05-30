@@ -2,12 +2,14 @@
     bottom: 0;
     left: 0;
     position: fixed;
+    /*position: relative;*/
     right: 0;
     top: 59px;
 }
 
 body{
     font-size: 12pt;
+    position: relative;
 }
 
 .table td {
@@ -25,23 +27,43 @@ body{
     float: left;
 	height: 100%;
     overflow-y: scroll;
+    position: relative;
 }
 
 /* Разделитель сайдбара (маленькая полоска снизу) */
-.sidebar .divider {
+/*.sidebar .divider {
     background-color: #e5e5e5;
     height: 1px;
     margin: 9px 0;
     overflow: hidden;
-}
+}*/
 
 /* Стиль сайдбара */
 .sidebar a {
   display: block;
   color: black;
-  padding: 16px;
+  padding: 13px;
   text-decoration: none;
 }
+
+/* Цвет вкладки при наведении на неё мышкой */
+#sidebar .list-group > a:hover, #sidebar .list-group > a:focus {
+    background-color: #7abaff;
+    border-left: 1px solid #563d7c;
+    color: white;
+}
+
+/* Цвет выбранной вкладки */
+#sidebar .list-group > a.active{
+    background-color: #007bff;
+}
+
+/* При нажатии на кнопку, меняем стиль вкладки */
+/*.sidebar a:active {
+  color: #ffffff;
+  background-color: #7abaff;
+  border-color: #494F57;
+}*/
 
 /* Вкладка при нажатии мыши */
 /*.sidebar a.active {
@@ -50,23 +72,19 @@ body{
 }*/
 
 /* Цвет вкладки при выборе мышью */
-.sidebar a:hover:not(.active) {
+/*.sidebar a:hover:not(.active) {
   background-color: #555;
   color: white;
-}
+}*/
 
 /*
-.sidebar a:focus {
-    background-color: #555;
-    color: white;
-}
-*/
 
 /* Контент (в данном случае таблица), расположенный справа */
 div.content {
-  margin-left: 300px;
-  height: 100%;
-  overflow-y: scroll;
+    margin-left: 300px;
+    height: 100%;
+    overflow-y: scroll;
+    position: relative;
 }
 
 /* On screens that are less than 700px wide, make the sidebar into a topbar */

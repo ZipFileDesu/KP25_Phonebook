@@ -2,17 +2,18 @@
 
 {% block content %}
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-    {% for department in departments %}
-     <a href="#department{{ forloop.counter }}">{{ department }}</a>
-    {% endfor %}
-    <li class="divider"></li>
+     <div class="sidebar" id="sidebar">
+    <div class="list-group">
+        {% for department in departments %}
+            <a class="list-group-item list-group-item-action" href="#department{{ forloop.counter }}">{{ department }}</a>
+        {% endfor %}
+    </div>
     </div>
 
 <!-- Page content -->
-<div class="content">
+<div class="content" data-spy="scroll" data-target="#sidebar" data-offset="0">
 <!-- Table -->
-<table class="table table-sm table-bordered" data-spy="scroll" data-target="#sidebar">
+<table class="table table-sm table-bordered">
   <thead>
     <tr>
       <th scope="col">ФИО</th>

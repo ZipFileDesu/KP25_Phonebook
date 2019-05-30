@@ -1,7 +1,20 @@
 {% extends "phonebook/wrapper.html" %}
 
 {% block content %}
-<table class="table table-sm table-bordered" data-spy="scroll" data-target="#sidebar">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+    <div class="list-group">
+        {% for department in departments %}
+            <a class="list-group-item list-group-item-action" href="#department{{ forloop.counter }}">{{ department }}</a>
+        {% endfor %}
+        <li class="divider"></li>
+    </div>
+    </div>
+
+<!-- Page content -->
+<div class="content" data-spy="scroll" data-target="#sidebar" data-offset="0">
+<!-- Table -->
+<table class="table table-sm table-bordered">
   <thead>
     <tr>
       <th scope="col">ФИО</th>
@@ -13,7 +26,12 @@
   </thead>
 <tbody>
 
+{% for department in departments %}
+    <tr class="alert-dark">
+        <th colspan="6" id="department{{ forloop.counter }}"> {{ department }}</th>
+    </tr>
     {% for person in person_list %}
+        {% if person.department == department %}
         <tr>
             <th scope="row"> {{ person }}</th>
 
@@ -41,7 +59,10 @@
                 <td>{{ "-" }}</td>
             {% endif %}
         </tr>
+        {% endif %}
     {% endfor %}
+{% endfor %}
 </tbody>
 </table>
+</div>
 {% endblock %}

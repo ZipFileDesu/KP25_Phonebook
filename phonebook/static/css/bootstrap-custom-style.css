@@ -47,14 +47,14 @@ body{
 }
 
 /* Цвет вкладки при наведении на неё мышкой */
-#sidebar .list-group > a:hover, #sidebar .list-group > a:focus {
+.sidebar .list-group > a:hover, #sidebar .list-group > a:focus {
     background-color: #7abaff;
     border-left: 1px solid #563d7c;
     color: white;
 }
 
 /* Цвет выбранной вкладки */
-#sidebar .list-group > a.active{
+.sidebar .list-group > a.active{
     background-color: #007bff;
 }
 
@@ -85,6 +85,22 @@ div.content {
     height: 100%;
     overflow-y: scroll;
     position: relative;
+}
+
+.navbar-brand {
+    padding-left: 15px;
+}
+
+.navbar-header{
+    padding-left: 15px;
+}
+
+.scroll-top-button {
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    opacity: 1;
+    cursor: pointer;
 }
 
 /* On screens that are less than 700px wide, make the sidebar into a topbar */

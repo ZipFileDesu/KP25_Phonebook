@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.http import HttpResponse, request, HttpResponseRedirect
 from phonebook.forms import SearchForm
-from .models import Person, Department
+from .models import Person, Department, BranchOffice
 from django.contrib.postgres.search import SearchVector
 import numpy as np
 
@@ -25,6 +25,12 @@ class IndexView(generic.ListView):
     template_name = 'phonebook/phonebook.html'
     context_object_name = 'person_list'
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.is_ajax():
+            return render(request, 'phonebook/branch_office.html',{'entry_list': BranchOffice.objects.all()})
+        else:
+            return super().dispatch(request, *args, **kwargs)
+
     # Возвращает список работников
     def get_queryset(self):
         return Person.objects.all()
@@ -37,9 +43,10 @@ class IndexView(generic.ListView):
         return context
 
 
+
 '''     Данная функция используется для фильтрации сотрудников по таким критериям: Полное имя, городской телефон, 
     ip телефон, должность. Также преобразует URL адрес, исходя из запроса или вбитых данных в форму 
-    (например kadastr/phonebook/searc/q=danil), возвращая переменные (person_list, department, form), 
+    (например kadastr/phonebook/search/q=danil), возвращая переменные (person_list, department, form), 
      которые вставляются в HTML шаблон'''
 def search(request):
     if request.method == 'GET':
@@ -61,7 +68,4 @@ def search(request):
                                'departments': filtered_departments,
                                'form': form})
             else:       # Иначе возвращаем список всех работников
-                return render(request, 'phonebook/phonebook.html',
-                              {'person_list': Person.objects.all(),
-                               'departments': Department.objects.all().order_by('id'),
-                               'form': form})
+                return HttpResponseRedirect('/')

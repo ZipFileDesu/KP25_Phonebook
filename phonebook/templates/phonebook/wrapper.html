@@ -25,36 +25,33 @@
 </script>
 
 <!-- navbar -->
-<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
+<nav class="navbar navbar-expand-md fixed-top">
   <div class="container-fluid">
     <ul class="navbar-nav mr-auto">
-        <li class="nav-item dropdown" data-toggle="tooltip" title="Меню">
-            <a class="nav-link" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img src="{% static 'open-iconic-master/png/align-center-4x.png' %}" style="width: 24px"></a>
+        <li class="nav-item dropdown">
+            <a class="nav-link menu-navbar" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-bars" data-toggle="tooltip" title="Меню"></i></a>
         <div class="dropdown-menu" aria-labelledby="dropdown04">
           <a class="dropdown-item" href="/admin">Панель администратора</a>
           <a class="dropdown-item" href="#">Экспорт в CSV</a>
           <a class="dropdown-item" href="#">Экспорт в CSV все регионы</a>
         </div>
       </li>
-      <li class="nav-item">
-        <div class="navbar-brand">Телефонный справочник ФГБУ</div>
-      </li>
-        <li data-toggle="tooltip" title="Выбор региона" class="nav-item">
-            <a class="nav-link" href="#">ФГБУ ~ Приморский край</a>
-      </li>
+        <li class="nav-item">
+            <div class="navbar-brand">Телефонный справочник ФГБУ</div>
+        </li>
+        <li data-toggle="tooltip" title="Выбор региона" class="nav-item" id="region">
+            <a class="nav-link nav-region" href="" data-toggle="modal" data-target="#exampleModal">ФГБУ ~ Приморский край</a>
+        </li>
         <li class="nav-item" data-toggle="tooltip" title="Время в регионе">
             <div id="time" class="navbar-brand"></div>
-
         </li>
     </ul>
       <div class="navbar-form navbar-right">
           <!-- Form -->
     <form class="form-inline my-2 my-sm-0" action="/search/" method="get">
-        <div class="form-control" placeholder="Найти">
       {{ form }}
-        </div>
-        <input class="btn btn-primary" type="submit" value="Найти">
+        <input class="btn btn-info" type="submit" value="Найти">
     </form>
   </div>
       </div>
@@ -81,8 +78,41 @@
         $("#push").click(function () {
             $("#content").animate({ scrollTop: 0 }, 600);
         });
+
+        $('#region').click(function () {
+            $.ajax({
+                method: 'GET',
+                url: '/',
+                success: function (data) {
+                    console.log(data);
+                    $("#modal-window-content").html(data);
+                    },
+                error: function (data) {
+                    console.log("Error")
+                }
+            })
+        })
     });
 </script>
+
+<!-- Modal Window -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Список регионов</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-window-content">
+        Загрузка...
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

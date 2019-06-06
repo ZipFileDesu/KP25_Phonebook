@@ -20,8 +20,8 @@ class Department(models.Model):
 
 # В каком филиале сотрудник числится
 class BranchOffice(models.Model):
-    branch_office_region_number = models.IntegerField()
     branch_office_name = models.CharField(max_length=200)
+    branch_office_region_number = models.IntegerField()
 
     def __str__(self):
         return self.branch_office_name
@@ -30,9 +30,9 @@ class BranchOffice(models.Model):
 # Информация о самом сотруднике
 class Person(models.Model):
     full_name = models.CharField(max_length=200)
-    email = models.EmailField(max_length=200)
-    city_phone = models.CharField(max_length=200)
-    ip_phone = models.CharField(max_length=200)
+    email = models.EmailField(max_length=200, null=True, default=None)
+    city_phone = models.CharField(max_length=200, null=True, default=None)
+    ip_phone = models.CharField(max_length=200, null=True, default=None)
     position = models.ForeignKey(Position, on_delete=models.PROTECT, null=True, default=None)
     department = models.ForeignKey(Department, on_delete=models.PROTECT, null=True, default=None)
     branch_office = models.ForeignKey(BranchOffice, on_delete=models.PROTECT, null=True, default=None)

@@ -4,7 +4,7 @@
     position: fixed;
     /*position: relative;*/
     right: 0;
-    top: 59px;
+    top: 56px;
 }
 
 body{
@@ -20,9 +20,50 @@ body{
     text-align: center;
 }
 
+.tr-department{
+    background-color: #c7e3f6;
+}
+
+/* Стиль навигационной панели */
+.navbar{
+    background-color: #006fb8;
+    border-color: black;
+    color: white;
+}
+
+/* Стиль кнопки выбора региона */
+.nav-region{
+    color: #9d9d9d;
+}
+
+.nav-region:hover{
+    color: white;
+}
+
+/* Отступы иконки меню */
+.menu-navbar{
+    padding-top: 0.5rem;
+    padding-bottom: 0rem;
+}
+
+/* Цвет иконки меню и её размер */
+.menu-navbar i{
+    color: white;
+    font-size: 30px;
+}
+
+/* Отступы navbar-brand */
+.navbar-brand {
+    padding-left: 15px;
+}
+
+/* Отступы navbar-header */
+.navbar-header{
+    padding-left: 15px;
+}
+
 /* Навигационное меню сайдбара */
 .sidebar {
-    padding: 10px 0;
     width: 300px;
     float: left;
 	height: 100%;
@@ -48,14 +89,14 @@ body{
 
 /* Цвет вкладки при наведении на неё мышкой */
 .sidebar .list-group > a:hover, #sidebar .list-group > a:focus {
-    background-color: #7abaff;
-    border-left: 1px solid #563d7c;
+    background-color: lightgrey;
     color: white;
 }
 
 /* Цвет выбранной вкладки */
 .sidebar .list-group > a.active{
-    background-color: #007bff;
+    background-color: grey;
+    border-color: black;
 }
 
 /* При нажатии на кнопку, меняем стиль вкладки */
@@ -87,14 +128,6 @@ div.content {
     position: relative;
 }
 
-.navbar-brand {
-    padding-left: 15px;
-}
-
-.navbar-header{
-    padding-left: 15px;
-}
-
 .scroll-top-button {
     position: fixed;
     bottom: 20px;
@@ -102,6 +135,17 @@ div.content {
     opacity: 1;
     cursor: pointer;
 }
+
+/* Цвет вкладок в вспылвающем модальном окне */
+.modal-body a{
+    color: black;
+}
+
+/*
+.modal-body a:hover{
+
+}
+*/
 
 /* On screens that are less than 700px wide, make the sidebar into a topbar */
 @media screen and (max-width: 700px) {

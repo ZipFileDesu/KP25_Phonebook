@@ -51,7 +51,12 @@
           <!-- Form -->
     <form class="form-inline my-2 my-sm-0" action="/search/" method="get">
       {{ form }}
-        <input class="btn btn-info" type="submit" value="Найти">
+        <button type="submit" class="btn btn-light mr-sm-2" style="border-color: lightgrey" data-toggle="tooltip" title="Поиск">
+            <i class="fa fa-search" aria-hidden="true"></i>
+        </button>
+        <button type="submit" class="btn btn-light" style="border-color: lightgrey" data-toggle="tooltip" title="Очистить" name="clear">
+              <i class="fa fa-close mr-ms-2" aria-hidden="true"></i>
+        </button>
     </form>
   </div>
       </div>

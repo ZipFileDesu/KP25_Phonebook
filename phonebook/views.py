@@ -3,6 +3,7 @@ from functools import reduce
 
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.views import generic
 from django.http import HttpResponse, request, HttpResponseRedirect
 from phonebook.forms import SearchForm
@@ -68,4 +69,4 @@ def search(request):
                                'departments': filtered_departments,
                                'form': form})
             else:       # Иначе возвращаем список всех работников
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect(reverse('phonebook:index',args=""))

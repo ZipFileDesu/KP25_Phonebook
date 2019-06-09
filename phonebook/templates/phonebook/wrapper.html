@@ -41,7 +41,7 @@
             <div class="navbar-brand">Телефонный справочник ФГБУ</div>
         </li>
         <li data-toggle="tooltip" title="Выбор региона" class="nav-item" id="region">
-            <a class="nav-link nav-region" href="" data-toggle="modal" data-target="#exampleModal">ФГБУ ~ Приморский край</a>
+            <a class="nav-link nav-region" href="" data-toggle="modal" data-target="#exampleModal">{{ branch_office.0.branch_office_name }}</a>
         </li>
         <li class="nav-item" data-toggle="tooltip" title="Время в регионе">
             <div id="time" class="navbar-brand"></div>
@@ -49,7 +49,7 @@
     </ul>
       <div class="navbar-form navbar-right">
           <!-- Form -->
-    <form class="form-inline my-2 my-sm-0" action="/search/" method="get">
+    <form class="form-inline my-2 my-sm-0" action="{% url 'phonebook:search' branch_office.0.id %}" method="get">
       {{ form }}
         <button type="submit" class="btn btn-light mr-sm-2" style="border-color: lightgrey" data-toggle="tooltip" title="Поиск">
             <i class="fa fa-search" aria-hidden="true"></i>

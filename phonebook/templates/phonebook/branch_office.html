@@ -1,4 +1,4 @@
 {% for entry in entry_list %}
-    <a href="#">{{ entry }} </a>
+    <a href="{% url 'phonebook:region' entry.id %}">{{ entry }} </a>
     <br/>
 {% endfor %}

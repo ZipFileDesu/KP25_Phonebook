@@ -21,7 +21,9 @@ import numpy as np
 
 
 '''     Данный класс ListView используется для отображения информации, которая берётся из БД, возвращая переменные 
-    (или же контекст person_list, department, form), которые вставляются в HTML шаблон (например: kadastr/phonebook)'''
+    (или же контекст person_list, department, form, branch_office), 
+    которые вставляются в HTML шаблон (например: kadastr/phonebook). 
+    Он рендерит страницу региона ЦА ФГБУ '''
 class IndexView(generic.ListView):
     template_name = 'phonebook/phonebook.html'
     context_object_name = 'person_list'
@@ -34,29 +36,30 @@ class IndexView(generic.ListView):
 
     # Возвращает список работников
     def get_queryset(self):
-        return Person.objects.all()
+        return Person.objects.all().filter(branch_office=3)
 
     # Возвращает список переменных (контекстов) для вставки в HTML шаблон
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['departments'] = Department.objects.all().order_by('id')
+        context['departments'] = Department.objects.all().order_by('id').filter(reduce(operator.or_, (Q(department_name__contains=x[0])
+                                        for x in context['person_list'].values_list('department__department_name').exclude(department__isnull=True))))
         context['form'] = SearchForm(initial={'search': "", })
+        context['branch_office'] = BranchOffice.objects.all().filter(id=3)
         return context
 
-
-
-'''     Данная функция используется для фильтрации сотрудников по таким критериям: Полное имя, городской телефон, 
+    '''     Данная функция используется для фильтрации сотрудников по таким критериям: Полное имя, городской телефон,
     ip телефон, должность. Также преобразует URL адрес, исходя из запроса или вбитых данных в форму 
-    (например kadastr/phonebook/search/q=danil), возвращая переменные (person_list, department, form), 
+    (например kadastr/phonebook/1/search/q=danil), возвращая переменные (person_list, department, form, branch_office), 
      которые вставляются в HTML шаблон'''
-def search(request):
+def search(request, pk):
     if request.method == 'GET':
         form = SearchForm(request.GET)
         if form.is_valid():
+            branch_office = BranchOffice.objects.all().filter(id=pk)
             if form.cleaned_data['q']:      # Если запрос не пустой, то мы возвращаем фильтрованный список работников
                 filtered_persons = Person.objects.annotate(
                     search=SearchVector('full_name', 'ip_phone', 'position__position_name')) \
-                    .filter(search__icontains=request.GET['q'])
+                    .filter(search=request.GET['q']).filter(branch_office_id=pk)
                 if filtered_persons:
                     filtered_departments = Department.objects.\
                         filter(reduce(operator.or_, (Q(department_name__contains=x[0])
@@ -67,6 +70,26 @@ def search(request):
                 return render(request, 'phonebook/phonebook.html',
                               {'person_list': filtered_persons,
                                'departments': filtered_departments,
-                               'form': form})
+                               'form': form,
+                               'branch_office': branch_office})
             else:       # Иначе возвращаем список всех работников
-                return HttpResponseRedirect(reverse('phonebook:index',args=""))
+                return HttpResponseRedirect(reverse('phonebook:region',args=str(branch_office[0].id)))
+
+''' Данный класс используется для выбора региона. Преобразует URL адрес, исходя из выбранного региона 
+(например: kadastr/phonebook/1), возвращая переменные (person_list, department, form, branch_office), 
+которые вставляются в HTML шаблон '''
+class RegionView(generic.ListView):
+    template_name = 'phonebook/phonebook.html'
+    context_object_name = 'person_list'
+
+    def get_queryset(self):
+        return Person.objects.all().filter(branch_office_id=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+        context = super(RegionView, self).get_context_data(**kwargs)
+        if context['person_list']:
+            context['departments'] = Department.objects.all().order_by('id').filter(reduce(operator.or_, (Q(department_name__contains=x[0])
+                                        for x in context['person_list'].values_list('department__department_name').exclude(department__isnull=True))))
+        context['form'] = SearchForm(initial={'search': "", })
+        context['branch_office'] = BranchOffice.objects.all().filter(id=self.kwargs['pk'])
+        return context

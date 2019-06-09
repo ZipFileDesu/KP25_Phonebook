@@ -6,7 +6,7 @@ while True:
     print('Input file name:')
     file_name = input();
     try:
-        file_in = pd.read_csv(file_name, sep=';', skiprows=1)
+        file_in = pd.read_csv(file_name, sep=';', skiprows=0)
     except FileNotFoundError:
         print('Error! File not found. \n')
         continue

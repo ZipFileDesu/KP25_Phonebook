@@ -9,6 +9,7 @@ class SearchForm(forms.Form):
                                                                                         'выводимым полям в таблице'}))
 
     def clean_q(self):
+        #Если нажата кнопка "Очистки", то возвращаем ложь, иначе, если нажата кнопка поиска, возвращаем истину
         if 'clear' in self.data:
             return False
         else:

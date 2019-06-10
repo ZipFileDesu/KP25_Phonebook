@@ -41,7 +41,10 @@
             <div class="navbar-brand">Телефонный справочник ФГБУ</div>
         </li>
         <li data-toggle="tooltip" title="Выбор региона" class="nav-item" id="region">
-            <a class="nav-link nav-region" href="" data-toggle="modal" data-target="#exampleModal">{{ branch_office.0.branch_office_name }}</a>
+            <a class="nav-link nav-region" href="" data-toggle="modal" data-target="#regionModalWindowSelector">{{ region.0.region_name }}</a>
+        </li>
+        <li class="nav-item" id="region">
+            <div class="nav-link nav-region"> {{ region.0.city_id.city_name }}</div>
         </li>
         <li class="nav-item" data-toggle="tooltip" title="Время в регионе">
             <div id="time" class="navbar-brand"></div>
@@ -49,7 +52,7 @@
     </ul>
       <div class="navbar-form navbar-right">
           <!-- Form -->
-    <form class="form-inline my-2 my-sm-0" action="{% url 'phonebook:search' branch_office.0.id %}" method="get">
+    <form class="form-inline my-2 my-sm-0" action="{% url 'phonebook:search' region.0.id %}" method="get">
       {{ form }}
         <button type="submit" class="btn btn-light mr-sm-2" style="border-color: lightgrey" data-toggle="tooltip" title="Поиск">
             <i class="fa fa-search" aria-hidden="true"></i>
@@ -70,30 +73,31 @@
 </div>
 </div>
 
-<!-- Скрипт, который скроллит страницу в самый вверх -->
+<!-- Скрипт, который скроллит страницу в самый вверх и который отсылает ajax запрос при вызове модального окна -->
 <script>
     $(document).ready(function () {
         // Таймер, который каждую секунду обновляет текущее время
         $("#time").text('00:00:00');
         setInterval(function() {
-            var tet = moment().utcOffset(0);
-            $("#time").text(tet.format('HH:mm:ss'));
+            var time = moment().utcOffset(60 * {{ region.0.city_id.timezone }});
+            $("#time").text(time.format('HH:mm:ss'));
         }, 1000);
+
         // Кнопка в правом нижнем углу, при нажатии которой страница скроллится в самый вверх
         $("#push").click(function () {
             $("#content").animate({ scrollTop: 0 }, 600);
         });
 
+        // При нажатии на кнопку выбора региона, отсылается ajax запрос, который возвращает список регионов
         $('#region').click(function () {
             $.ajax({
                 method: 'GET',
                 url: '/',
                 success: function (data) {
-                    console.log(data);
                     $("#modal-window-content").html(data);
                     },
                 error: function (data) {
-                    console.log("Error")
+                    $("#modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу")
                 }
             })
         })
@@ -101,11 +105,11 @@
 </script>
 
 <!-- Modal Window -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="regionModalWindowSelector" tabindex="-1" role="dialog" aria-labelledby="regionModalWindowSelectorLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Список регионов</h5>
+        <h5 class="modal-title" id="regionModalWindowSelectorLabel">Список регионов</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

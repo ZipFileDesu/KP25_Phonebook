@@ -1,5 +1,8 @@
+from django.contrib.auth.models import User
 from django.db import models
+from django.contrib import auth
 
+from main import settings
 
 # Должность сотрудника
 class Position(models.Model):
@@ -35,7 +38,6 @@ class Region(models.Model):
     def __str__(self):
         return self.region_name
 
-
 # Информация о самом сотруднике
 class Person(models.Model):
     full_name = models.CharField(max_length=200)
@@ -48,3 +50,8 @@ class Person(models.Model):
 
     def __str__(self):
         return self.full_name
+
+# Избранные номера для каждого сотрудника (работают только в том случае, если пользователь залогинился)
+class Favorite(models.Model):
+    user = models.ForeignKey(User, null=True, default=None, on_delete=models.CASCADE)
+    favorite_number = models.ForeignKey(Person, null=True, default=None, on_delete=models.CASCADE)

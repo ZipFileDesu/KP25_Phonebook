@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 {% load staticfiles %}
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
 <link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}" type="text/css">
@@ -21,6 +22,7 @@
 <script>
     $(document).ready(function () {
   $('[data-toggle="tooltip"]').tooltip()
+  $('[rel="tooltip"]').tooltip({trigger: "hover"});
 })
 </script>
 
@@ -32,9 +34,19 @@
             <a class="nav-link menu-navbar" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fa fa-bars" data-toggle="tooltip" title="Меню"></i></a>
         <div class="dropdown-menu" aria-labelledby="dropdown04">
-          <a class="dropdown-item" href="/admin">Панель администратора</a>
-          <a class="dropdown-item" href="#">Экспорт в CSV</a>
-          <a class="dropdown-item" href="#">Экспорт в CSV все регионы</a>
+            {% if user %}
+                <p class ="dropdown-item"> Пользователь: {{ user }} </p>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#favoriteModalWindow" id="favorite">Избранные номера</a>
+                <a class="dropdown-item" href="{% url 'phonebook:logout' region.0.id %}">Выйти</a>
+            {% else %}
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#loginModalWindow">Войти</a>
+            {% endif %}
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" id="exportCSV" href="#">Экспорт в CSV</a>
+            <a class="dropdown-item" id="allRegionExportCSV" href="#">Экспорт в CSV все регионы</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/admin">Панель администратора</a>
         </div>
       </li>
         <li class="nav-item">
@@ -52,10 +64,14 @@
     </ul>
       <div class="navbar-form navbar-right">
           <!-- Form -->
-    <form class="form-inline my-2 my-sm-0" action="{% url 'phonebook:search' region.0.id %}" method="get">
+    <form class="form-inline my-2 my-sm-0" action="{% url 'phonebook:search' region.0.id %}" method="get" id="search-form">
       {{ form }}
-        <button type="submit" class="btn btn-light mr-sm-2" style="border-color: lightgrey" data-toggle="tooltip" title="Поиск">
+        <button type="submit" class="btn btn-light mr-sm-2" style="border-color: lightgrey" data-toggle="tooltip" title="Поиск" name="search">
             <i class="fa fa-search" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-light mr-sm-2" style="border-color: lightgrey" rel="tooltip" data-toggle="modal"
+                title="Поиск по всем регионам" data-target="#searchAllModalWindow" name="searchAll" id="searchAll">
+            <i class="fa fa-search" aria-hidden="true"></i><i class="fa fa-globe" aria-hidden="true"></i>
         </button>
         <button type="submit" class="btn btn-light" style="border-color: lightgrey" data-toggle="tooltip" title="Очистить" name="clear">
               <i class="fa fa-close mr-ms-2" aria-hidden="true"></i>
@@ -73,8 +89,93 @@
 </div>
 </div>
 
-<!-- Скрипт, который скроллит страницу в самый вверх и который отсылает ajax запрос при вызове модального окна -->
+<!-- Modal Window regionSelector -->
+<div class="modal fade" id="regionModalWindowSelector" tabindex="-1" role="dialog" aria-labelledby="regionModalWindowSelectorLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="regionModalWindowSelectorLabel">Список регионов</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="region-selector-modal-window-content">
+        Загрузка...
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window login -->
+<div class="modal fade" id="loginModalWindow" tabindex="-1" role="dialog" aria-labelledby="loginModalWindowLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginModalWindowLabel">Вход в систему</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-window-content">
+          <p> Чтобы добавлять номера в избранные, нужно авторизоваться в системе </p>
+          <form id="login-form">
+              {% csrf_token %}
+        <div class="form-group">
+            <label class="col-form-label">Логин:</label>
+            <input type="text" class="form-control" id="login" name="login">
+          </div>
+          <div class="form-group">
+              <label class="col-form-label">Пароль:</label>
+              <input type="password" class="form-control" id="password" name="password">
+              <label class="col-form-label" id="login-error"></label>
+          </div>
+              <button type="button" class="btn btn-primary" id="login-button">Войти</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window favorites -->
+<div class="modal fade bd-example-modal-xl" id="favoriteModalWindow" tabindex="-1" role="dialog" aria-labelledby="favoriteModalWindowLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="favoriteModalWindowLabel">Избранные номера</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="favorite-modal-window-content">
+        Загрузка...
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window searchAll -->
+<div class="modal fade bd-example-modal-xl" id="searchAllModalWindow" tabindex="-1" role="dialog" aria-labelledby="searchAllModalWindowLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="searchAllModalWindowLabel">Поиск по всем регионам</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="searchAll-modal-window-content">
+        Загрузка...
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Скрипт -->
 <script>
+
     $(document).ready(function () {
         // Таймер, который каждую секунду обновляет текущее время
         $("#time").text('00:00:00');
@@ -88,40 +189,110 @@
             $("#content").animate({ scrollTop: 0 }, 600);
         });
 
+        // Функция, которая выдаёт сообщение, что данный пункт пока что не работает
+        var underMaintenance = function(){
+            alert('Эта пункт пока что не работает. Его работаспоспособность будет реализована в следующей версии (наверно)')
+        };
+
+        $('#exportCSV').click(function () {
+            underMaintenance()
+        });
+
+        $('#allRegionExportCSV').click(function () {
+            underMaintenance()
+        })
+
         // При нажатии на кнопку выбора региона, отсылается ajax запрос, который возвращает список регионов
         $('#region').click(function () {
             $.ajax({
                 method: 'GET',
-                url: '/',
+                url: {% url 'phonebook:region-list' %},
                 success: function (data) {
-                    $("#modal-window-content").html(data);
+                    $("#region-selector-modal-window-content").html(data);
                     },
                 error: function (data) {
-                    $("#modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу")
+                    $("#region-selector-modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу")
+                }
+            })
+        })
+
+        // При нажатии на пункт меню "избранное", выполняем ajax запрос, который достаёт из БД список избранных номеров
+        $('#favorite').click(function () {
+            $.ajax({
+                method: 'GET',
+                url: {% url 'phonebook:favorite-list' %},
+                success: function (data) {
+                    $("#favorite-modal-window-content").html(data);
+                    },
+                error: function (data) {
+                    $("#favorite-modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу")
+                }
+            })
+        })
+
+        // При нажатии на иконку звезды в таблице, добавляем данный номер в избранное
+        $('#person-table a').click(function () {
+            //console.log('Clicked list. ' + this.id);
+            $.ajax({
+                method: 'POST',
+                url: '{% url 'phonebook:add-favorite' %}',
+                data: {"csrfmiddlewaretoken" : "{{csrf_token}}",
+                    'person_id' : this.id},
+                cache: false,
+                success: function (data) {
+                    },
+                error: function (data) {
+                    alert('Ошибка добавления в избранное! Попробуйте перезагрузить страницу');
+                }
+            })
+        });
+
+        $('#searchAll').click(function () {
+            var form_values = $('#search-form').serializeArray();
+            console.log(form_values[0]['value'])
+            $.ajax({
+                method: 'GET',
+                url: '{% url 'phonebook:search-all' %}',
+                data: {'q' : form_values[0]['value']},
+                cache: false,
+                success: function (data) {
+                    $('#searchAll-modal-window-content').html(data);
+                    },
+                error: function (data) {
+                    $('#searchAll-modal-window-content').html('Ошибка поиска! Попробуйте перезагрузить страницу');
+                }
+            })
+        });
+
+        /*
+            При нажатии на кнопку логина, проверяем, есть ли данный пользователь в БД. Если есть, то авторизуемся
+            в системе, если нет, то пишем ошибку авторизации
+         */
+        $('#login-button').click(function () {
+            var form_values = $('#login-form').serializeArray();
+            //console.log(form_values);
+            //console.log(form_values[1]['name'])
+            $.ajax({
+                method: 'POST',
+                url: '{% url 'phonebook:login' region.0.id %}',
+                data: {"csrfmiddlewaretoken" : "{{csrf_token}}",
+                    'login' : form_values[1]['value'],
+                    'password' : form_values[2]['value']},
+                cache: false,
+                success: function (data) {
+                    if (!data)
+                        location.reload();
+                    else
+                        $('#login-error').html(data);
+                    },
+                error: function (data) {
+                    $('#login-error').html('Ошибка авторизации! Попробуйте перезагрузить страницу');
                 }
             })
         })
     });
 </script>
 
-<!-- Modal Window -->
-<div class="modal fade" id="regionModalWindowSelector" tabindex="-1" role="dialog" aria-labelledby="regionModalWindowSelectorLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="regionModalWindowSelectorLabel">Список регионов</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="modal-window-content">
-        Загрузка...
-      </div>
-      <div class="modal-footer">
-      </div>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>

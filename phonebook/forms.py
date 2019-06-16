@@ -11,10 +11,10 @@ class SearchForm(forms.Form):
     def clean_q(self):
         #Если нажата кнопка "Очистки", то возвращаем ложь, иначе, если нажата кнопка поиска, возвращаем истину
         if 'clear' in self.data:
-            return False
-        else:
+            return 'clear'
+        elif 'search' in self.data:
             data = self.cleaned_data['q'].strip()
             if not data:
-                return False
+                return 'clear'
             else:
-                return True
+                return 'search'

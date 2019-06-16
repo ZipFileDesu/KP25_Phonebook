@@ -1,0 +1,93 @@
+<script>
+    $(document).ready(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+<table class="table table-sm table-bordered" id="favorite-table">
+  <thead>
+    <tr>
+      <th scope="col">ФИО</th>
+      <th scope="col">Должность</th>
+      <th scope="col">E-Mail</th>
+      <th scope="col">Городской телефон</th>
+      <th scope="col">IP телефон</th>
+      <th scope="col">Регион</th>
+    </tr>
+  </thead>
+<tbody>
+
+{% for department in department_list %}
+    <tr class="tr-department">
+        <th colspan="6" id="department{{ forloop.counter }}"> {{ department }}</th>
+    </tr>
+    {% for favorite in favorite_list %}
+        {% if favorite.favorite_number.department == department %}
+        <tr id={{ favorite.favorite_number.id }}>
+            <th scope="row">
+                {% if user %}
+                <a href="#" id={{ favorite.favorite_number.id }}>
+                    <i class="fa fa-minus" data-toggle="tooltip" title="Удалить из избранного"></i>
+                </a>
+                    {% endif %}
+                {{ favorite.favorite_number }}
+            </th>
+
+            {% if favorite.favorite_number.position %}
+                <td>{{ favorite.favorite_number.position }}</td>
+            {% else %}
+                <td>{{ "-" }}</td>
+            {% endif %}
+
+            {% if favorite.favorite_number.email %}
+                <td>{{ favorite.favorite_number.email }}</td>
+            {% else %}
+                <td>{{ "-" }}</td>
+            {% endif %}
+
+            {% if favorite.favorite_number.city_phone %}
+                <td>{{ favorite.favorite_number.city_phone }}</td>
+            {% else %}
+                <td>{{ "-" }}</td>
+            {% endif %}
+
+            {% if favorite.favorite_number.ip_phone %}
+                <td>{{ favorite.favorite_number.ip_phone}}</td>
+            {% else %}
+                <td>{{ "-" }}</td>
+            {% endif %}
+
+            {% if favorite.favorite_number.region %}
+                <td>{{ favorite.favorite_number.region}}</td>
+            {% else %}
+                <td>{{ "-" }}</td>
+            {% endif %}
+        </tr>
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+</tbody>
+</table>
+
+<script>
+     /*
+            Таблица избранных номеров в вспдывающем окне. При нажатии на иконку минуса в таблице, удаляем данный
+            номер из избранных
+     */
+    $('#favorite-table a').click(function () {
+            console.log('Clicked list. ' + this.id);
+            $.ajax({
+                method: 'POST',
+                url: '{% url 'phonebook:remove-favorite' %}',
+                data: {"csrfmiddlewaretoken" : "{{csrf_token}}",
+                    'person_id' : this.id},
+                cache: false,
+                success: function (data) {
+                    $('#favorite-modal-window-content').html(data);
+                    },
+                error: function (data) {
+                    alert('Ошибка удаления из избранных! Попробуйте перезагрузить страницу');
+                }
+            })
+        });
+</script>

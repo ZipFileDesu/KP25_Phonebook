@@ -20,6 +20,10 @@ body{
     text-align: center;
 }
 
+.table a {
+    color: black;
+}
+
 .tr-department{
     background-color: #c7e3f6;
 }
@@ -60,6 +64,10 @@ body{
 /* Отступы navbar-header */
 .navbar-header{
     padding-left: 15px;
+}
+
+.dropdown .dropdown-menu{
+    top: 46px;
 }
 
 /* Навигационное меню сайдбара */

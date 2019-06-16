@@ -1,18 +1,3 @@
-{% extends "phonebook/wrapper.html" %}
-
-{% block content %}
-    <!-- Sidebar -->
-     <div class="sidebar" id="sidebar">
-    <div class="list-group">
-        {% for department in department_list %}
-            <a class="list-group-item list-group-item-action" href="#department{{ forloop.counter }}">{{ department }}</a>
-        {% endfor %}
-    </div>
-    </div>
-
-<!-- Page content -->
-<div class="content" id="content" data-spy="scroll" data-target="#sidebar" data-offset="0">
-<!-- Table -->
 <table class="table table-sm table-bordered" id="person-table">
   <thead>
     <tr>
@@ -21,6 +6,7 @@
       <th scope="col">E-Mail</th>
       <th scope="col">Городской телефон</th>
       <th scope="col">IP телефон</th>
+      <th scope="col">Регион</th>
     </tr>
   </thead>
 <tbody>
@@ -64,14 +50,15 @@
             {% else %}
                 <td>{{ "-" }}</td>
             {% endif %}
+
+            {% if person.department %}
+                <td>{{ person.department}}</td>
+            {% else %}
+                <td>{{ "-" }}</td>
+            {% endif %}
         </tr>
         {% endif %}
     {% endfor %}
 {% endfor %}
 </tbody>
 </table>
-<button class="btn btn-light scroll-top-button" id="push" style="border-color: lightgrey">
-    <i class="fa fa-arrow-up fa-2x" aria-hidden="true"></i>
-</button>
-</div>
-{% endblock %}

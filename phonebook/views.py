@@ -43,7 +43,8 @@ class IndexView(generic.ListView):
                 department__isnull=True))))
         context['form'] = SearchForm(initial={'search': "", })
         context['region'] = Region.objects.all().filter(id=3)
-        context['user'] = auth.get_user(self.request).username
+        context['user'] = auth.get_user(self.request)
+        context['user_info'] = Person.objects.all().filter(auth_user=context['user'].id)
         return context
 
 
@@ -67,7 +68,8 @@ class RegionView(generic.ListView):
                                           department__isnull=True))))
         context['form'] = SearchForm(initial={'search': "", })
         context['region'] = Region.objects.all().filter(id=self.kwargs['pk'])
-        context['user'] = auth.get_user(self.request).username
+        context['user'] = auth.get_user(self.request)
+        context['user_info'] = Person.objects.all().filter(auth_user=context['user'].id)
         return context
 
 
@@ -80,6 +82,7 @@ def search(request, pk):
         form = SearchForm(request.GET)
         if form.is_valid():
             region = Region.objects.all().filter(id=pk)
+            user = auth.get_user(request)
             if form.cleaned_data['q'] == 'search':  # Если запрос не пустой, то мы возвращаем фильтрованный список работников
                 filtered_persons = Person.objects.annotate(
                     search=SearchVector('full_name', 'ip_phone', 'position__position_name')) \
@@ -97,7 +100,8 @@ def search(request, pk):
                                'department_list': filtered_departments,
                                'form': form,
                                'region': region,
-                               'user': auth.get_user(request).username})
+                               'user': user,
+                               'user_info': Person.objects.all().filter(auth_user=user.id)})
             elif form.cleaned_data['q'] == 'clear':  # Иначе возвращаем список всех работников
                 return HttpResponseRedirect(reverse('phonebook:region', args=str(region[0].id)))
 

@@ -47,7 +47,7 @@ class IndexView(generic.ListView):
         return context
 
 
-    ''' Данный класс используется для выбора региона. Преобразует URL адрес, исходя из выбранного региона 
+    ''' Данный класс возвращает сотрудников данного выбранного региона. Преобразует URL адрес, исходя из выбранного региона 
     (например: kadastr/phonebook/1), возвращая переменные (person_list, department, form, region), 
     которые вставляются в HTML шаблон '''
 class RegionView(generic.ListView):

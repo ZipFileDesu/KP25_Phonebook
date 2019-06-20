@@ -40,6 +40,7 @@ class Region(models.Model):
 
 # Информация о самом сотруднике
 class Person(models.Model):
+    auth_user = models.ForeignKey(User, null=True, default=None, on_delete=models.DO_NOTHING)
     full_name = models.CharField(max_length=200)
     email = models.EmailField(max_length=200, null=True, default=None)
     city_phone = models.CharField(max_length=200, null=True, default=None)

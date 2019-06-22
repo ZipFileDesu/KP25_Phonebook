@@ -68,26 +68,3 @@
 {% endfor %}
 </tbody>
 </table>
-
-<script>
-     /*
-            Таблица избранных номеров в вспдывающем окне. При нажатии на иконку минуса в таблице, удаляем данный
-            номер из избранных
-     */
-    $('#favorite-table a').click(function () {
-            console.log('Clicked list. ' + this.id);
-            $.ajax({
-                method: 'POST',
-                url: '{% url 'phonebook:remove-favorite' %}',
-                data: {"csrfmiddlewaretoken" : "{{csrf_token}}",
-                    'person_id' : this.id},
-                cache: false,
-                success: function (data) {
-                    $('#favorite-modal-window-content').html(data);
-                    },
-                error: function (data) {
-                    alert('Ошибка удаления из избранных! Попробуйте перезагрузить страницу');
-                }
-            })
-        });
-</script>

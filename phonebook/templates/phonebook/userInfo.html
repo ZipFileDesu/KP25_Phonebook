@@ -1,0 +1,87 @@
+<p> Логин пользователя: {{ user }}</p>
+<div class="container">
+    <div class="row">
+        <div class="col-5">
+            Полное имя:
+        </div>
+        <div class="col">
+            {{ user_info.0.full_name }}
+        </div>
+              </div>
+    <div class="row">
+        <div class="col-5">
+            Должность:
+        </div>
+        <div class="col">
+            {% if user_info.0.position %}
+                {{ user_info.0.position }}
+            {% else %}
+                {{ "-" }}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5">
+            Почта:
+        </div>
+        <div class="col">
+            {% if user_info.0.email %}
+                {{ user_info.0.email }}
+            {% else %}
+                {{ "-" }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-5">
+            Городской телефон:
+        </div>
+        <div class="col">
+            {% if user_info.0.city_phone %}
+                {{ user_info.0.city_phone }}
+            {% else %}
+                {{ "-" }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-5">
+            ip-телефон:
+        </div>
+        <div class="col">
+            {% if user_info.0.ip_phone %}
+                {{ user_info.0.ip_phone }}
+            {% else %}
+                {{ "-" }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-5">
+            Отдел:
+        </div>
+        <div class="col">
+            {% if user_info.0.department %}
+                {{ user_info.0.department }}
+            {% else %}
+            {{ "-" }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-5">
+            Регион:
+        </div>
+        <div class="col">
+            {% if user_info.0.region %}
+                {{ user_info.0.region }}
+            {% else %}
+                {{ "-" }}
+            {% endif %}
+        </div>
+    </div>
+</div>

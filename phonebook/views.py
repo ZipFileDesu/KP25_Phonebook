@@ -4,14 +4,14 @@ from functools import reduce
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, render_to_response, redirect
 from django.template.context_processors import csrf
-from django.urls import reverse
+from django.urls import reverse, resolve
 from django.views import generic, View
 from django.http import HttpResponse, request, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import auth
 
 from phonebook.forms import SearchForm
-from .models import Person, Department, Region, Favorite
+from .models import Person, Department, Region, Favorite, Position
 from django.contrib.postgres.search import SearchVector
 import numpy as np
 
@@ -44,7 +44,6 @@ class IndexView(generic.ListView):
         context['form'] = SearchForm(initial={'search': "", })
         context['region'] = Region.objects.all().filter(id=3)
         context['user'] = auth.get_user(self.request)
-        context['user_info'] = Person.objects.all().filter(auth_user=context['user'].id)
         return context
 
 
@@ -69,7 +68,6 @@ class RegionView(generic.ListView):
         context['form'] = SearchForm(initial={'search': "", })
         context['region'] = Region.objects.all().filter(id=self.kwargs['pk'])
         context['user'] = auth.get_user(self.request)
-        context['user_info'] = Person.objects.all().filter(auth_user=context['user'].id)
         return context
 
 
@@ -100,8 +98,7 @@ def search(request, pk):
                                'department_list': filtered_departments,
                                'form': form,
                                'region': region,
-                               'user': user,
-                               'user_info': Person.objects.all().filter(auth_user=user.id)})
+                               'user': user})
             elif form.cleaned_data['q'] == 'clear':  # Иначе возвращаем список всех работников
                 return HttpResponseRedirect(reverse('phonebook:region', args=str(region[0].id)))
 
@@ -131,6 +128,42 @@ HTML шаблон в модальное окно '''
 def getRegionList(request):
     return render(request, 'phonebook/region.html', {'region_list': Region.objects.all()})
 
+''' Получить информацию о авторизированном пользователе (используется в ajax запросе). 
+Возвращает переменные user и user_info, которые вставляются в HTML шаблон в модальное окно '''
+def getUserInfo(request):
+    user = auth.get_user(request)
+    user_info = Person.objects.all().filter(auth_user=user.id)
+    if (resolve(request.path_info).url_name == 'user-info'):
+        return render(request, 'phonebook/userInfo.html', {'user': user,
+                                                       'user_info': user_info})
+    elif (resolve(request.path_info).url_name == 'edit-user-info-form'):
+        return render(request, 'phonebook/editUserInfo.html', {'user': user,
+                                                            'user_info': user_info,
+                                                            'position_list': Position.objects.all(),
+                                                            'department_list' : Department.objects.all(),
+                                                            'region_list' : Region.objects.all()})
+
+def editUserInfo(request):
+    if (request.POST['userFullName'].strip()):
+        Person.objects.filter(auth_user=auth.get_user(request).id).update(full_name=request.POST['userFullName'])
+        Person.objects.filter(auth_user=auth.get_user(request).id).update(email=request.POST['email'])
+        if (request.POST['position_id'] != '0'):
+            Person.objects.filter(auth_user=auth.get_user(request).id).update(position_id=request.POST['position_id'])
+        else:
+            Person.objects.filter(auth_user=auth.get_user(request).id).update(position_id=None)
+        Person.objects.filter(auth_user=auth.get_user(request).id).update(city_phone=request.POST['city_phone'])
+        Person.objects.filter(auth_user=auth.get_user(request).id).update(ip_phone=request.POST['ip_phone'])
+        if (request.POST['department_id'] != '0'):
+            Person.objects.filter(auth_user=auth.get_user(request).id).update(department_id=request.POST['department_id'])
+        else:
+            Person.objects.filter(auth_user=auth.get_user(request).id).update(department_id=None)
+        if (request.POST['region_id'] != '0'):
+            Person.objects.filter(auth_user=auth.get_user(request).id).update(region_id=request.POST['region_id'])
+        else:
+            Person.objects.filter(auth_user=auth.get_user(request).id).update(region_id=None)
+        return HttpResponse('')
+    else:
+        return HttpResponse(False)
 
 ''' Добавляет номер в избранное. Добавляет в базу данных id пользователя, который зашёл в систему и id пользователя,
 чей номер был выбран для добавления в избранное '''

@@ -4,11 +4,13 @@
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
 <link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}" type="text/css">
 <link rel="stylesheet" href="{% static 'css/bootstrap-custom-style.css' %}" type="text/css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script type="text/javascript" src="{% static 'js/moment-with-locales.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jQuery_3.4.1.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,8 +36,8 @@
             <a class="nav-link menu-navbar" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fa fa-bars" data-toggle="tooltip" title="Меню"></i></a>
         <div class="dropdown-menu" aria-labelledby="dropdown04">
-            {% if user %}
-                <a class ="dropdown-item" href="#" data-toggle="modal" data-target="#userInfoModalWindow"> Пользователь: {{ user }} </a>
+            {% if user.is_authenticated %}
+                <a class ="dropdown-item" href="#" id="userInfo" data-toggle="modal" data-target="#userInfoModalWindow"> Пользователь: {{ user }} </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#favoriteModalWindow" id="favorite">Избранное</a>
                 <a class="dropdown-item" href="{% url 'phonebook:logout' region.0.id %}">Выйти</a>
@@ -140,34 +142,42 @@
 </div>
 
 <!-- Modal Window user info -->
-<div class="modal fade -lg" id="userInfoModalWindow" tabindex="-1" role="dialog" aria-labelledby="userInfoModalWindowLabel" aria-hidden="true">
-  <div class="modal-dialog -lg mw-100 w-75" role="document">
+<div class="modal fade" id="userInfoModalWindow" tabindex="-1" role="dialog" aria-labelledby="userInfoModalWindowLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="userInfoModalWindowLabel">Информация о пользователе: {{ user }} </h5>
+        <h5 class="modal-title" id="userInfoModalWindowLabel">Информация о пользователе</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body" id="user-info-modal-window-content">
-          <p> Логин пользователя: {{ user }}</p>
-          <form id="login-form">
-              {% csrf_token %}
-        <div class="form-group row">
-            <label class="col-form-label">Полное имя:</label>
-            <div class="col mb-2">
-            <input type="text" class="form-control" id="fullName" name="fullName" value="{{ user_info.0.full_name }}">
-            </div>
-          </div>
-          <div class="form-group row">
-              <label class="col-form-label">Пароль:</label>
-              <div class="col mb-2">
-              <input type="text" class="form-control" id="email" name="email" value="{{ user_info.0.email }}">
-              </div>
-          </div>
-              <button type="button" class="btn btn-primary" id="">Сохранить</button>
+          Загрузка...
+      </div>
+        <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="userEditOpenModal" data-toggle="modal" data-target="#editUserInfoModalWindow">Изменить</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window edit user info -->
+<div class="modal fade" id="editUserInfoModalWindow" tabindex="-1" role="dialog" aria-labelledby="editUserInfoModalWindowLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUserInfoModalWindowLabel">Редактировать информацию о пользователе</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="edit-user-info-modal-window-content">
+          Загрузка...
+      </div>
+        <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="userEditSave">Сохранить</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
       </div>
     </div>
   </div>
@@ -235,7 +245,7 @@
 
         $('#allRegionExportCSV').click(function () {
             underMaintenance()
-        })
+        });
 
         // При нажатии на кнопку выбора региона, отсылается ajax запрос, который возвращает список регионов
         $('#region').click(function () {
@@ -249,7 +259,7 @@
                     $("#region-selector-modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу")
                 }
             })
-        })
+        });
 
         // При нажатии на пункт меню "избранное", выполняем ajax запрос, который достаёт из БД список избранных номеров
         $('#favorite').click(function () {
@@ -258,12 +268,95 @@
                 url: {% url 'phonebook:favorite-list' %},
                 success: function (data) {
                     $("#favorite-modal-window-content").html(data);
+                    /*
+                        Таблица избранных номеров в всплывающем окне. При нажатии на иконку минуса в таблице, удаляем
+                        данный номер из избранных
+                    */
+                    $('#favorite-table a').click(function () {
+                        console.log('Clicked list. ' + this.id);
+                        $.ajax({
+                            method: 'POST',
+                            url: '{% url 'phonebook:remove-favorite' %}',
+                            data: {"csrfmiddlewaretoken" : "{{csrf_token}}",
+                                'person_id' : this.id},
+                            cache: false,
+                            success: function (data) {
+                                $('#favorite-modal-window-content').html(data);
+                                },
+                            error: function (data) {
+                                alert('Ошибка удаления из избранных! Попробуйте перезагрузить страницу');
+                            }
+                        });
+                    });
                     },
                 error: function (data) {
-                    $("#favorite-modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу")
+                    $("#favorite-modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу");
+                }
+            });
+        });
+
+        // При нажатии на пункт меню пользователя, выполняем ajax запрос, который достаёт из БД список информации о пользователе
+        $('#userInfo').click(function () {
+            $.ajax({
+                method: 'GET',
+                url: {% url 'phonebook:user-info' %},
+                success: function (data) {
+                    $("#user-info-modal-window-content").html(data);
+                    },
+                error: function (data) {
+                    $("#user-info-modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу")
                 }
             })
-        })
+        });
+
+        /*
+            При нажатии кнопки "изменить" (находится в модальном окне информации пользователя), закрываем модальное окно
+            и открываем новое модальное окно, отправляя ajax запрос, который достаёт из БД список информации о пользователе
+         */
+        $('#userEditOpenModal').click(function () {
+           $('#userInfoModalWindow').modal('hide');
+           $.ajax({
+                method: 'GET',
+                url: {% url 'phonebook:edit-user-info-form' %},
+                success: function (data) {
+                    $("#edit-user-info-modal-window-content").html(data);
+                    $('.selectpicker').selectpicker({});
+                    },
+                error: function (data) {
+                    $("#edit-user-info-modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу")
+                }
+            })
+        });
+
+        /*
+            Кнопка "изменить" модального окна редактирования пользовательских данных. При нажатии этой кнопки,
+            отправляется ajax запрос, который изменяет в бд информацию о пользователе
+         */
+        $('#userEditSave').click(function () {
+            //console.log($('#editUserFullName').val());
+            //console.log($("#editUserPosition").children(":selected").attr("id"));
+            $.ajax({
+                method: 'POST',
+                url: '{% url 'phonebook:edit-user-info' %}',
+                data: {"csrfmiddlewaretoken" : "{{csrf_token}}",
+                    'userFullName' : $('#editUserFullName').val(),
+                    'email' : $('#editUserEmail').val(),
+                    'position_id' : $("#editUserPosition").children(":selected").attr("id"),
+                    'city_phone' : $('#editUserCityPhone').val(),
+                    'ip_phone' : $('#editUserIpPhone').val(),
+                    'department_id' : $('#editUserDepartment').children(":selected").attr("id"),
+                    'region_id' : $('#editUserRegion').children(":selected").attr("id")},
+                cache: false,
+                success: function (data) {
+                    if (data == 'False'){
+                        $('#editUserFullName').addClass('is-invalid');
+                    }
+                    },
+                error: function (data) {
+                    alert('Ошибка изменение пользователя. Попробуйте перезагрузить страницу');
+                }
+            })
+        });
 
         // При нажатии на иконку звезды в таблице, добавляем данный номер в избранное
         $('#person-table a').click(function () {
@@ -282,9 +375,13 @@
             })
         });
 
+        /*
+            При нажатии на кнопку "Поиск по всем регионам", отправляем ajax запрос, который фильтрует пользователей,
+            исходя из данных в форме
+         */
         $('#searchAll').click(function () {
             var form_values = $('#search-form').serializeArray();
-            console.log(form_values[0]['value'])
+            console.log(form_values[0]['value']);
             $.ajax({
                 method: 'GET',
                 url: '{% url 'phonebook:search-all' %}',
@@ -324,7 +421,7 @@
                     $('#login-error').html('Ошибка авторизации! Попробуйте перезагрузить страницу');
                 }
             })
-        })
+        });
     });
 </script>
 

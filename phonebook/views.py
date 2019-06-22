@@ -83,7 +83,7 @@ def search(request, pk):
             user = auth.get_user(request)
             if form.cleaned_data['q'] == 'search':  # Если запрос не пустой, то мы возвращаем фильтрованный список работников
                 filtered_persons = Person.objects.annotate(
-                    search=SearchVector('full_name', 'ip_phone', 'position__position_name')) \
+                    search=SearchVector('full_name', 'city_phone', 'ip_phone', 'position__position_name')) \
                     .filter(search=request.GET['q']).filter(region_id=pk)
                 if filtered_persons:
                     filtered_departments = Department.objects. \
@@ -108,7 +108,7 @@ def search(request, pk):
     возвращая переменные (person_list, department, form, region), которые вставляются в HTML шаблон'''
 def searchAll(request):
     filtered_persons = Person.objects.annotate(
-        search=SearchVector('full_name', 'ip_phone', 'position__position_name')) \
+        search=SearchVector('full_name', 'city_phone', 'ip_phone', 'position__position_name')) \
         .filter(search=request.GET['q'])
     if filtered_persons:
         filtered_departments = Department.objects. \

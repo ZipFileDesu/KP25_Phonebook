@@ -351,9 +351,13 @@
                     if (data == 'False'){
                         $('#editUserFullName').addClass('is-invalid');
                     }
+                    else{
+                        $('#editUserInformation').html("Данные пользователя были успешно изменены!")
+                        location.reload();
+                    }
                     },
                 error: function (data) {
-                    alert('Ошибка изменение пользователя. Попробуйте перезагрузить страницу');
+                    $('#editUserInformation').html('Ошибка изменение пользователя. Попробуйте перезагрузить страницу');
                 }
             })
         });
@@ -368,6 +372,7 @@
                     'person_id' : this.id},
                 cache: false,
                 success: function (data) {
+                    //$('#person-table a title').val("Добавлено");
                     },
                 error: function (data) {
                     alert('Ошибка добавления в избранное! Попробуйте перезагрузить страницу');

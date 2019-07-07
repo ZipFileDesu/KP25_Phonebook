@@ -44,9 +44,7 @@
             {% else %}
             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#loginModalWindow">Войти</a>
             {% endif %}
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" id="exportCSV" href="#">Экспорт в CSV</a>
-            <a class="dropdown-item" id="allRegionExportCSV" href="#">Экспорт в CSV все регионы</a>
+
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/admin">Панель администратора</a>
         </div>
@@ -121,7 +119,7 @@
         </button>
       </div>
       <div class="modal-body" id="modal-window-content">
-          <p> Чтобы добавлять сотрудников в избранные и изменять информацию о себе, нужно авторизоваться в системе </p>
+          <p> Чтобы добавлять сотрудников в избранное, нужно авторизоваться в системе </p>
           <form id="login-form">
               {% csrf_token %}
         <div class="form-group">
@@ -155,7 +153,7 @@
           Загрузка...
       </div>
         <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="userEditOpenModal" data-toggle="modal" data-target="#editUserInfoModalWindow">Изменить</button>
+              <!-- <button type="button" class="btn btn-primary" id="userEditOpenModal" data-toggle="modal" data-target="#editUserInfoModalWindow">Изменить</button> -->
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
       </div>
     </div>
@@ -268,26 +266,6 @@
                 url: {% url 'phonebook:favorite-list' %},
                 success: function (data) {
                     $("#favorite-modal-window-content").html(data);
-                    /*
-                        Таблица избранных номеров в всплывающем окне. При нажатии на иконку минуса в таблице, удаляем
-                        данный номер из избранных
-                    */
-                    $('#favorite-table a').click(function () {
-                        console.log('Clicked list. ' + this.id);
-                        $.ajax({
-                            method: 'POST',
-                            url: '{% url 'phonebook:remove-favorite' %}',
-                            data: {"csrfmiddlewaretoken" : "{{csrf_token}}",
-                                'person_id' : this.id},
-                            cache: false,
-                            success: function (data) {
-                                $('#favorite-modal-window-content').html(data);
-                                },
-                            error: function (data) {
-                                alert('Ошибка удаления из избранных! Попробуйте перезагрузить страницу');
-                            }
-                        });
-                    });
                     },
                 error: function (data) {
                     $("#favorite-modal-window-content").html("Ошибка загрузки. Попробуйте перезагрузить страницу");

@@ -143,6 +143,7 @@ def getUserInfo(request):
                                                             'department_list' : Department.objects.all(),
                                                             'region_list' : Region.objects.all()})
 
+''' Изменить информацию о авторизированном пользователе '''
 def editUserInfo(request):
     if (request.POST['userFullName'].strip()):
         Person.objects.filter(auth_user=auth.get_user(request).id).update(full_name=request.POST['userFullName'])

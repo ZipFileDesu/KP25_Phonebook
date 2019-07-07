@@ -48,7 +48,7 @@ class Person(models.Model):
     position = models.ForeignKey(Position, on_delete=models.PROTECT, null=True, default=None)
     department = models.ForeignKey(Department, on_delete=models.PROTECT, null=True, default=None)
     region = models.ForeignKey(Region, on_delete=models.PROTECT, null=True, default=None)
-    room = models.CharField(max_length=10, null=True, default=None)
+    room = models.CharField(max_length=200, null=True, default=None)
 
     def __str__(self):
         return self.full_name
